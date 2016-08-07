@@ -1,6 +1,7 @@
 package com.vanna.recyclerview;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,19 +15,32 @@ import org.w3c.dom.Text;
  */
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
-    String mDataset[] = {
-            "Word 1",
-            "Word 2",
-            "Word 3",
-            "Word 4"
-        };
+    String mDataset[];
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
+    ViewHolderClickListener viewHolderClickListener;
+
+    public MyAdapter(String[] mDataset) {
+        this.mDataset = mDataset;
+    }
+
+    public void setViewHolderClickListener(ViewHolderClickListener viewHolderClickListener) {
+        this.viewHolderClickListener = viewHolderClickListener;
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+
         public TextView mTextView;
-        public ViewHolder(LinearLayout v) {
-            super(v);
-            mTextView = (TextView) v.findViewById(R.id.itemText);
+        public ViewHolder(LinearLayout itemRowView) {
+            super(itemRowView);
+            mTextView = (TextView) itemRowView.findViewById(R.id.itemText);
+            itemRowView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    Log.d("ViewHolder", "onclick " + position);
+                    viewHolderClickListener.onClick(position);
+                }
+            });
         }
     }
 
@@ -37,14 +51,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     @Override
     public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // create a new view
         LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_row, parent, false);
-        // set the view's size, margins, paddings and layout parameters
 
-//        TextView textView = (TextView) v.findViewById(R.id.itemText);
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
+        ViewHolder viewHolder = new ViewHolder(v);
+        return viewHolder;
     }
 
     @Override
